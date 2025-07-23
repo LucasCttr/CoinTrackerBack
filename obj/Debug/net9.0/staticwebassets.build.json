@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "marYYyYLcnN2FZ3UHM8Gvq1P3Fu01GZ7KSUvNcaxzCU=",
+  "Source": "coninTracker.API",
+  "BasePath": "_content/coninTracker.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
