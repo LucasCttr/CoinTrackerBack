@@ -45,6 +45,8 @@ builder.Services.AddScoped<IJwtService, JwtService>(provider =>
     return new JwtService(settings);
 });
 
+builder.Services.AddHttpClient<ICoinGeckoService, CoinGeckoService>();
+
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
