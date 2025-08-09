@@ -16,28 +16,35 @@ public class CoinsController : ControllerBase
         _coinGeckoService = coinGeckoService;
     }
 
+
     [HttpGet]
     public async Task<IActionResult> GetCoins(
-        int page = 1, 
-        int pageSize = 20,
-        string? sortBy = null,
-        string? sortOrder = null)
+        string? cursor = null, 
+        int limit = 20)
     {
         try
         {
-            var coins = await _coinGeckoService.GetCoinsAsync(page, pageSize);
+            // Convertir cursor a página
+            int page = 1;
+            if (!string.IsNullOrEmpty(cursor) && int.TryParse(cursor, out int parsedPage))
+            {   
+                page = parsedPage;
+            }
+
+            var coins = await _coinGeckoService.GetCoinsAsync(page, limit);
             
-            // 🎯 Crear respuesta paginada
-            var paginatedResponse = new PaginatedResponse<CoinGeckoDto>
+            // Crear respuesta para scroll infinito
+            var infiniteResponse = new InfiniteScrollResponse<CoinGeckoDto>
             {
                 Data = coins,
-                CurrentPage = page,
-                PageSize = pageSize,
-                TotalItems = 100, // CoinGecko no devuelve total, usar estimado
-                TotalPages = (int)Math.Ceiling(100.0 / pageSize)
+                Count = coins.Count,
+                HasMore = coins.Count == limit, // Si hay exactamente 'limit' elementos, probablemente hay más
+                NextCursor = coins.Count == limit ? (page + 1).ToString() : null
             };
 
-            return Ok(paginatedResponse);
+            // IMPORTANTE: Este endpoint NO usa SignalR
+            // Solo devuelve datos cuando el usuario hace scroll
+            return Ok(infiniteResponse);
         }
         catch (Exception ex)
         {
@@ -46,7 +53,7 @@ public class CoinsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetCoin(string id)
+    public async Task<IActionResult> GetCoinById(string id)
     {
         try
         {

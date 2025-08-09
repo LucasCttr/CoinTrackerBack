@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using coninTracker.API.Data;
 using coninTracker.API.Services;
+using coninTracker.API.Hubs;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,14 +13,21 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200") // ✅ PERMITE TU FRONTEND
-              .AllowAnyHeader()                     // ✅ PERMITE CUALQUIER HEADER
-              .AllowAnyMethod();                   // ✅ PERMITE GET, POST, PUT, DELETE
+        policy.WithOrigins("http://localhost:4200") // PERMITE TU FRONTEND
+              .AllowAnyHeader()                     // PERMITE CUALQUIER HEADER
+              .AllowAnyMethod()                    // PERMITE GET, POST, PUT, DELETE
+              .AllowCredentials();                 // PERMITE SIGNALR CONNECTIONS
     });
 });
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+// AGREGAR SIGNALR
+builder.Services.AddSignalR();
+
+// AGREGAR SERVICIO DE ACTUALIZACIONES
+builder.Services.AddHostedService<CoinsUpdateService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -52,6 +60,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+        if (jwtSettings == null)
+        {
+            throw new InvalidOperationException("JwtSettings configuration section is missing or invalid.");
+        }
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -74,11 +86,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// 🔥 IMPORTANTE: USAR CORS ANTES DE AUTHENTICATION
+// IMPORTANTE: USAR CORS ANTES DE AUTHENTICATION
 app.UseCors("AllowAngular");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// MAPEAR SIGNALR HUB
+app.MapHub<CoinsHub>("/coinshub");
+
 app.MapControllers();
 
 var summaries = new[]
