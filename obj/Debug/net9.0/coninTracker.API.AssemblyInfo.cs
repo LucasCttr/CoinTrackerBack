@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("coninTracker.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+57aaf2d6e2a4551fdb74665462155eb98fb640a6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b59317ac981da932e576e4d72f5d48cf54e683f7")]
 [assembly: System.Reflection.AssemblyProductAttribute("coninTracker.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("coninTracker.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

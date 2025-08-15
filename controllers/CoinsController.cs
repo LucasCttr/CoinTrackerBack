@@ -20,7 +20,7 @@ public class CoinsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetCoins(
         string? cursor = null, 
-        int limit = 20)
+        int limit = 36)
     {
         try
         {
